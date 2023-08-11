@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "508483008398",
+    "project_id": "gift-present-app",
+    "storage_bucket": "gift-present-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:508483008398:android:7e0cb58217be071f4916df",
+        "android_client_info": {
+          "package_name": "com.gift.gift"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "508483008398-krvoda5hal9g46d972a83bpsut5emt48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmpGeSh152TpjdYSkreHq3r7SOjHRW0I4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "508483008398-krvoda5hal9g46d972a83bpsut5emt48.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "508483008398-07eov31g2g3paohp3bp7r4vk5adcmhrk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                  "bundle_id": "com.gift.gift.RunnerTests"
+              }
+          }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

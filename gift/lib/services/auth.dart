@@ -1,29 +1,18 @@
-// ignore_for_file: unused_import
+import 'package:get/get.dart';
 import 'package:gift/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:gift/services/database.dart';
-import 'package:gift/services/notif.dart';
-import '../models/user_of_gift.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // create user object based on firebaseUser
-  UserHandler _userFromFirebaseUser(User? user) {
-    return UserHandler(uid: user!.uid);
-  }
 
-  // auth change user stream
-  User? get currentUsr {
-    return _auth.currentUser;
-  }
+  UserHandler _userFromFirebaseUser(User? user) => UserHandler(uid: user!.uid);
 
-  Stream<UserHandler> get user {
-    return _auth.authStateChanges().map(_userFromFirebaseUser);
-  }
+  User? get currentUsr => _auth.currentUser;
 
-  // sign in anonymously
+  Stream<UserHandler> get user =>
+      _auth.authStateChanges().map(_userFromFirebaseUser);
+
   Future signInAnon() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
@@ -34,7 +23,6 @@ class AuthService {
     }
   }
 
-  // sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -52,17 +40,22 @@ class AuthService {
           email: email, password: password);
       User? user = result.user;
       String? userName = user?.email?.split('@')[0] ?? '';
-      // Create a doc for the user
+
       await DatabaseService(uid: user?.uid).updateUserData(
         userName: userName,
         age: 0,
         nickName: 'nickName',
         imagePath:
-            'https://firebasestorage.googleapis.com/v0/b/gift-present-app.appspot.com/o/files%2FdefaultAvatarImage.png?alt=media&token=708309f5-0873-4f6c-9198-c2b1a690bbe5',
+            '',
         giftRecieved: 0,
         giftSent: 0,
         usrUid: user!.uid,
         friend: '',
+        friendMessage: '',
+        friendList: [],
+        enableNotif: true,
+        nicknames: {}
+        
       );
       return _userFromFirebaseUser(user);
     } catch (e) {
@@ -70,12 +63,12 @@ class AuthService {
     }
   }
 
-  // Sign out
-  Future signOutAnon() async {
+  Future<void> logout(SnackbarController snackbarController) async {
     try {
-      return await _auth.signOut();
+      await _auth.signOut();
+      Get.back();
     } catch (e) {
-      return null;
+      snackbarController;
     }
   }
 }

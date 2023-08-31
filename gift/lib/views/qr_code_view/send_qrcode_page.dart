@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gift/services/auth.dart';
+import 'package:gift/models/user_of_gift.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class CreateQRCode extends StatefulWidget {
-  const CreateQRCode({super.key});
+  final UserOfGift user;
+  const CreateQRCode({super.key, required this.user});
 
   @override
   State<CreateQRCode> createState() => _CreateQRCodeState();
@@ -19,7 +20,7 @@ class _CreateQRCodeState extends State<CreateQRCode> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           QrImageView(
-            data: AuthService().currentUsr!.uid,
+            data: widget.user.uid,
             size: 250,
             version: QrVersions.auto,
             backgroundColor: Colors.transparent,
@@ -31,7 +32,7 @@ class _CreateQRCodeState extends State<CreateQRCode> {
               color: Colors.white,
               eyeShape: QrEyeShape.square,
             ),
-          )
+          ),
         ],
       ),
     );

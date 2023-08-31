@@ -11,21 +11,28 @@ import 'package:http/http.dart' as http;
 import 'database.dart';
 
 class NotificationServices {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  void initialize(BuildContext context) {
+    requestNotificationPermission();
+    isTokenRefresh();
+    getDeviceToken().then((value) {});
+    firebaseInit(context);
+    setupInteractMessage(context);
+  }
+
   void requestNotificationPermission() async {
-    // ignore: unused_local_variable
-    NotificationSettings settings = await messaging.requestPermission(
-        alert: true,
-        announcement: true,
-        badge: true,
-        carPlay: true,
-        criticalAlert: true,
-        provisional: true,
-        sound: true);
+    await messaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: true,
+      sound: true,
+    );
   }
 
   Future<String> getDeviceToken() async {
@@ -39,21 +46,22 @@ class NotificationServices {
     var androidInit =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
     var initSettings = InitializationSettings(android: androidInit);
-    await _flutterLocalNotificationsPlugin.initialize(initSettings,
-        onDidReceiveNotificationResponse: (payload) {
-      handleMessage(context, message);
-    });
+    await _flutterLocalNotificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (payload) {
+        handleMessage(context, message);
+      },
+    );
   }
 
-  void isTokentRefresh() async {
+  void isTokenRefresh() async {
     messaging.onTokenRefresh.listen((event) {
       event.toString();
     });
   }
 
-  void fireaseInit(BuildContext context) {
+  void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
-      //initLocalNotification(message);
       if (Platform.isAndroid) {
         initLocalNotification(context, message);
         showNotif(message);
@@ -76,7 +84,8 @@ class NotificationServices {
     });
   }
 
-  Future sendNotif(String token, UserOfGift user, String type) async {
+  Future sendNotif(
+      String token, UserOfGift user, String type, String friendMessage) async {
     String message = '';
     if (type == 'friend') {
       message = 'Your are now friend with ${user.userName} \uD83D\uDE00';
@@ -97,31 +106,35 @@ class NotificationServices {
       'data': {
         'type': type,
         'id': '${type.hashCode}',
+        'message': friendMessage
       },
     };
     await http.post(
-        Uri.parse(
-          'https://fcm.googleapis.com/fcm/send',
-        ),
-        body: jsonEncode(data),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization':
-              'key= authorization'
-        });
+      Uri.parse(
+        'https://fcm.googleapis.com/fcm/send',
+      ),
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'key= authorization',
+      },
+    );
   }
 
   void handleMessage(BuildContext context, RemoteMessage message) {
     if (message.data['type'] == 'friend') {
-      Future.microtask(() => Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Home())));
+      Future.microtask(
+        () => Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+        ),
+      );
     }
   }
 
   Future<void> handleNotificationTap(
       BuildContext context, RemoteMessage data) async {
     if (data.data['type'] == 'friend_request') {
-      // Show a dialog or navigate to a page for accepting/rejecting friend request
       showDialog(
         context: context,
         builder: (context) => const Home(),
@@ -131,9 +144,10 @@ class NotificationServices {
 
   Future<void> showNotif(RemoteMessage message) async {
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-        Random.secure().nextInt(100000).toString(),
-        'High Importance Notification',
-        importance: Importance.max);
+      Random.secure().nextInt(100000).toString(),
+      'High Importance Notification',
+      importance: Importance.max,
+    );
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       channel.id.toString(),
@@ -150,10 +164,11 @@ class NotificationServices {
 
     Future.delayed(Duration.zero, () {
       _flutterLocalNotificationsPlugin.show(
-          0,
-          message.notification!.title.toString(),
-          message.notification!.body.toString(),
-          notificationDetails);
+        0,
+        message.notification!.title.toString(),
+        message.notification!.body.toString(),
+        notificationDetails,
+      );
     });
   }
 }

@@ -12,11 +12,8 @@ class Loading extends StatelessWidget {
         child: SpinKitWaveSpinner(
           color: Color(0xEE9388A2),
           size: 100.0,
-          
         ),
       ),
     );
   }
 }
-
-//const Color(0xF2191622).withOpacity(0.5),

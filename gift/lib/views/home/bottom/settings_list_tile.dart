@@ -27,6 +27,7 @@ class _SettingListTileState extends State<SettingListTile> {
   late MaterialStateProperty<Icon?> thumbIcon;
   late bool isNotificationEnabled = false;
   late bool isDarkModeEnabled = false;
+  late Color? trackOutlineColor = Palette.boldPink;
 
   @override
   void initState() {
@@ -64,7 +65,12 @@ class _SettingListTileState extends State<SettingListTile> {
   }
 
   void _toggleNotifications(bool newValue) {
-    setState(() => isNotificationEnabled = newValue);
+    setState(() {
+      isNotificationEnabled = newValue;
+      isNotificationEnabled
+          ? trackOutlineColor = Palette.boldPink
+          : trackOutlineColor = Palette.lightPink;
+    });
     _saveDarkModePreference(newValue, 0);
   }
 
@@ -130,10 +136,13 @@ class _SettingListTileState extends State<SettingListTile> {
             ? null
             : SizedBox(
                 child: Transform.scale(
-                  scale: 1.25,
+                  scale: 1.125,
                   child: GetBuilder<ThemeController>(
                     init: ThemeController(),
                     builder: (controller) => Switch(
+                      trackOutlineColor: MaterialStateProperty.resolveWith(
+                          (states) => trackOutlineColor),
+                      trackOutlineWidth: const MaterialStatePropertyAll(2),
                       activeTrackColor: Palette.lightPink,
                       inactiveTrackColor: Palette.boldPink,
                       thumbColor: MaterialStateProperty.all(_thumbColor()),

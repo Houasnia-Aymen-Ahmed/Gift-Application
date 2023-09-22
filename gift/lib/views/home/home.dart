@@ -9,11 +9,12 @@ import 'package:gift/shared/show_logout_dialog_box.dart';
 import 'package:gift/theme/theme_controller.dart';
 import 'package:gift/views/home/no_friend_home.dart';
 import 'package:home_widget/home_widget.dart';
+
 import 'body/body.dart';
 import 'drawer/drawer.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  const Home ({Key? key}) : super(key:key);
 
   @override
   State<Home> createState() => _HomeState();

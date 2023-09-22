@@ -19,17 +19,17 @@
         },
 
         {
-            "name": "android-x86",
+            "name": "android-arm",
             "request": "launch",
             "type": "dart",
-            "deviceId": "emulator-5554"
+            "deviceId": "c1ab06a8"
         },
 
     ],
     "compounds": [
         {
             "name": "All Devices",
-            "configurations": ["android-arm64", "android-x86"]
+            "configurations": ["android-arm64", "android-arm"]
         }
     ]
 }

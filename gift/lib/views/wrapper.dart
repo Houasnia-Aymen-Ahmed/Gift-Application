@@ -15,7 +15,11 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     return Consumer<UserHandler?>(
-      builder: (context, user, _){
+      builder: (
+        context,
+        UserHandler? user,
+        Widget? child,
+      ) {
         if (user == null) {
           return const Authenticate();
         } else {
@@ -23,7 +27,7 @@ class _WrapperState extends State<Wrapper> {
             user: user,
           );
         }
-      }
-    ) ;    
+      },
+    );
   }
 }

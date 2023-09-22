@@ -11,12 +11,13 @@ import 'package:gift/theme/theme_controller.dart';
 import 'package:gift/views/wrapper.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_flutterMessagingBackgroundHandler);
-
   DependencyInjection.init();
   await GetStorage.init();
   runApp(

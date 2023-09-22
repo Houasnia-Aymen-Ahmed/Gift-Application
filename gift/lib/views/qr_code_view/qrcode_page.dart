@@ -87,7 +87,10 @@ class _QRCodePageState extends State<QRCodePage> {
             top: qrCodeTxtPos,
             child: Text(
               "Your QR Code",
-              style: txt().copyWith(fontSize: 20.0),
+              style: txt().copyWith(
+                fontSize: 20.0,
+                color: Colors.white,
+              ),
             ),
           ),
           Positioned(
@@ -124,7 +127,9 @@ class _QRCodePageState extends State<QRCodePage> {
             bottom: qrBtnTxtPos - 85,
             child: Text(
               "Or Scan your friend's QR ",
-              style: txt(),
+              style: txt().copyWith(
+                color: Colors.white,
+              ),
             ),
           )
         ],

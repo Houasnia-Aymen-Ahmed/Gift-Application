@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:home_widget/home_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gift/models/user.dart';
 import 'package:gift/services/auth.dart';
 import 'package:gift/services/dependency_injection.dart';
 import 'package:gift/constants/theme_constants.dart';
 import 'package:gift/theme/theme_controller.dart';
+import 'package:gift/views/authenticate/authenticate.dart';
+import 'package:gift/views/home/home.dart';
 import 'package:gift/views/wrapper.dart';
-import 'package:home_widget/home_widget.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +70,11 @@ class _GiftAppState extends State<GiftApp> {
         themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
         home: const Wrapper(),
         debugShowCheckedModeBanner: false,
+        routes: {
+          '/home': (context) => const Home(),
+          '/auth': (context) => const Authenticate(),
+          // other routes...
+        },
       ),
     );
   }

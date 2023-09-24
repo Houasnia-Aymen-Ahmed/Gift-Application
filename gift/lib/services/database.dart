@@ -133,6 +133,7 @@ class DatabaseService {
   }
 
   UserOfGift _currentUserFromSnapshots(DocumentSnapshot snapshot) {
+    
     if (snapshot.exists) {
       isDataExist = true;
       Map<String, dynamic> doc = snapshot.data() as Map<String, dynamic>;
@@ -174,6 +175,8 @@ class DatabaseService {
   }
 
   Stream<UserOfGift> getUserDataStream(String userId) {
+    
+    
     return userColl.doc(userId).snapshots().map(_currentUserFromSnapshots);
   }
 

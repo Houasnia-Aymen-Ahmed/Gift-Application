@@ -66,17 +66,17 @@ class _HomeState extends State<Home> {
             );
           } else {
             myUser = snapshot.data;
+            if (myUser!.friend == '') {
+              return const Loading();
+            }
             return StreamBuilder<UserOfGift>(
               stream: _databaseService.getUserDataStream(myUser!.friend),
               builder: (context, snapshot) {
                 if (!_databaseService.isDataExist) {
                   return NoFriendHome(myUser: myUser!);
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return const Loading();
                 } else if (!snapshot.hasData) {
                   return const Center(
-                    child: Text("No Friend Data Found in Home"),
+                    child: Loading(),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
@@ -121,8 +121,10 @@ class _HomeState extends State<Home> {
                                     fontSize: 22.5,
                                   ),
                                 ),
-                                onPressed: () => LogoutDialogHandler()
-                                    .showLogoutConfirmationDialog(context),
+                                onPressed: () {
+                                  LogoutDialogHandler()
+                                      .showLogoutConfirmationDialog(context);
+                                },
                               ),
                             ],
                             title: const Text(

@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gift/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gift/services/database.dart';
+import '../constants/constants.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -42,33 +44,46 @@ class AuthService {
       String? userName = user?.email?.split('@')[0] ?? '';
 
       await DatabaseService(uid: user?.uid).updateUserData(
-        userName: userName,
-        age: 0,
-        nickName: 'nickName',
-        imagePath:
-            '',
-        giftRecieved: 0,
-        giftSent: 0,
-        usrUid: user!.uid,
-        friend: '',
-        friendMessage: '',
-        friendList: [],
-        enableNotif: true,
-        nicknames: {}
-        
-      );
+          userName: userName,
+          age: 0,
+          nickName: 'nickName',
+          imagePath: '',
+          giftRecieved: 0,
+          giftSent: 0,
+          usrUid: user!.uid,
+          friend: '',
+          friendMessage: '',
+          friendList: [],
+          enableNotif: true,
+          nicknames: {});
       return _userFromFirebaseUser(user);
     } catch (e) {
       return null;
     }
   }
 
-  Future<void> logout(SnackbarController snackbarController) async {
+  Future<void> logout() async {
     try {
       await _auth.signOut();
-      Get.back();
     } catch (e) {
-      snackbarController;
+      print(e);
+      Get.back();
+      snackBar(
+        "Error\nLogging out",
+        const Duration(milliseconds: 2500),
+        icon: Icons.close_rounded,
+        width: 350.0,
+      );
     }
+    Get.back();
+    snackBar(
+      "Successfully logged out",
+      const Duration(milliseconds: 1500),
+      icon: Icons.check_circle_rounded,
+      width: 350.0,
+      overlayBlur: 0.1,
+      isDissmissible: false,
+      hasShadow: false,
+    );
   }
 }

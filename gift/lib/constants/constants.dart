@@ -185,16 +185,25 @@ Widget editableListTile(
   );
 }
 
-dynamic snackBar(String messageText, Duration duration) {
+dynamic snackBar(
+  String messageText,
+  Duration duration, {
+  IconData icon = Icons.signal_wifi_statusbar_connected_no_internet_4_rounded,
+  double width = 200.0,
+  double overlayBlur = 5.0,
+  bool isDissmissible = false,
+  bool hasShadow = true,
+}) {
   return Get.rawSnackbar(
     backgroundColor: Palette.seagull,
-    isDismissible: false,
+    isDismissible: isDissmissible,
     boxShadows: [
-      const BoxShadow(
-        color: Colors.black,
-        offset: Offset(0, 5),
-        blurRadius: 15,
-      ),
+      if (hasShadow)
+        const BoxShadow(
+          color: Colors.black,
+          offset: Offset(0, 5),
+          blurRadius: 15,
+        ),
     ],
     borderRadius: 10,
     margin: const EdgeInsets.all(25),
@@ -209,13 +218,13 @@ dynamic snackBar(String messageText, Duration duration) {
     ),
     snackPosition: SnackPosition.TOP,
     icon: Icon(
-      Icons.signal_wifi_statusbar_connected_no_internet_4_rounded,
+      icon,
       color: Palette.iconColor,
     ),
     shouldIconPulse: true,
-    maxWidth: 175,
+    maxWidth: width,
     duration: duration,
-    overlayBlur: 5,
+    overlayBlur: overlayBlur,
     overlayColor: Colors.black.withOpacity(0.5),
     padding: const EdgeInsets.all(18),
   );
@@ -247,7 +256,11 @@ List<Text> quote() {
   ];
 }
 
-String capitalizeFirst(String input) {
+String capitalizeFirst(String? input) {
+  if (input == null) {
+    return "text";
+  }
+
   if (input.length <= 1) {
     return input;
   }

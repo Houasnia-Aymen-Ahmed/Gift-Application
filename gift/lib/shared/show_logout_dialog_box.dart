@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gift/services/auth.dart';
-import '../constants/constants.dart';
 
 class LogoutDialogHandler {
   final AuthService _auth = AuthService();
@@ -27,12 +26,7 @@ class LogoutDialogHandler {
               onPressed: () {},
               child: ElevatedButton.icon(
                 onPressed: () {
-                  _auth.logout(
-                    snackBar(
-                      "Error\nLogging out",
-                      const Duration(milliseconds: 2500),
-                    ),
-                  );
+                  _auth.logout();
                   Navigator.pop(context);
                 },
                 style: ButtonStyle(

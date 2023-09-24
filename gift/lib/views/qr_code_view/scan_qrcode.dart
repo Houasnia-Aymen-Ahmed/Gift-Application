@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gift/services/notif.dart';
 import 'package:gift/constants/constants.dart';
-import 'package:gift/views/home/home.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../../models/user_of_gift.dart';
 import '../../services/database.dart';
@@ -22,69 +21,76 @@ class _ScanQRCodeState extends State<ScanQRCode> {
   final qrKey = GlobalKey(debugLabel: "QR");
   final DatabaseService _databaseService = DatabaseService();
   late Stream<UserOfGift> userStream;
-  late UserOfGift myUserData;
-  late UserOfGift friendUserData;
+  late UserOfGift? myUserData;
+  late UserOfGift? friendUserData;
   Barcode? code;
   QRViewController? controller;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     userStream = _databaseService.getUserDataStream(widget.myUser.uid);
     userStream.listen((user) {
-      setState(() => myUserData = user);
+      setState(() {
+        myUserData = user;
+      });
     });
   }
 
   void onQRViewCreated(QRViewController controller) {
     setState(() => this.controller = controller);
-    controller.scannedDataStream.listen((code) => setState(() {
+    controller.scannedDataStream.listen(
+      (code) => setState(
+        () {
           this.code = code;
           _handleScannedUser(code.code!);
-        }));
+        },
+      ),
+    );
   }
 
   void _handleScannedUser(String scannedCode) {
     _databaseService.getUserDataStream(scannedCode).listen((user) {
-      try {
-        friendUserData = user;
-      } catch (e) {
-        return;
+      friendUserData = user;
+      if (mounted) {
+        onQRScanSuccess();
       }
     });
-    onQRScanSuccess();
   }
 
   void onQRScanSuccess() {
-    NotificationServices()
-        .sendNotif(friendUserData.token, myUserData, 'friend', "");
+    if (friendUserData != null) {
+      NotificationServices()
+          .sendNotif(friendUserData!.token, myUserData!, 'friend', "");
 
-    String usrUid = myUserData.uid;
-    String friendUid = friendUserData.uid;
-    _databaseService.updateUserSpecificData(
-        uid: myUserData.uid, friend: friendUid, addFriend: friendUid);
-    _databaseService.updateUserSpecificData(
-        uid: friendUserData.uid, friend: usrUid, addFriend: usrUid);
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const Home()),
-    );
+      String usrUid = myUserData!.uid;
+      String friendUid = friendUserData!.uid;
+      _databaseService.updateUserSpecificData(
+          uid: myUserData!.uid, friend: friendUid, addFriend: friendUid);
+      _databaseService.updateUserSpecificData(
+          uid: friendUserData?.uid, friend: usrUid, addFriend: usrUid);
+    }
   }
 
   @override
   void reassemble() async {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      await controller!.pauseCamera();
+    if (!_isDisposed) {
+      super.reassemble();
+      if (Platform.isAndroid) {
+        await controller!.pauseCamera();
+      }
+      controller!.resumeCamera();
     }
-    controller!.resumeCamera();
   }
 
   @override
   void dispose() {
-    super.dispose();
-    controller!.dispose();
+    if (mounted) {
+      super.dispose();
+      _isDisposed = true;
+      controller?.dispose();
+    }
   }
 
   @override

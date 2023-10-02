@@ -21,9 +21,10 @@ class FirstIndexView extends StatefulWidget {
 class _FirstIndexViewState extends State<FirstIndexView> {
   String imageAsset = GiftImage.giftCard;
   List<TyperAnimatedText> typer = [
-    buildTyper('Happy Birthday to'),
-    buildTyper('The most beautifull'),
-    buildTyper('Person in the world'),
+    buildTyper("Small gestures"),
+    buildTyper("Big connections"),
+    buildTyper("Because sometimes"),
+    buildTyper("All you need is a quiet 'hello'"),
   ];
 
   void onNextTyper(int index, bool isLast) {
@@ -59,10 +60,10 @@ class _FirstIndexViewState extends State<FirstIndexView> {
                   ),
                   child: buildGradientText(typer, onNextTyper),
                 ),
-                Padding(
+                /* Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: buildGradientImage(imageAsset),
-                )
+                ) */
               ],
             ),
           ),

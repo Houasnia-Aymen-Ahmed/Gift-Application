@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -5,7 +6,6 @@ import 'dart:math';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gift/models/user_of_gift.dart';
 import 'package:gift/views/home/home.dart';
 import 'package:http/http.dart' as http;
@@ -88,7 +88,7 @@ class NotificationServices {
   Future sendNotif(
       String token, UserOfGift user, String type, String friendMessage) async {
     String message = '';
-    String? key = dotenv.env['NOTIFICATION_API_KEY'];
+
     if (type == 'friend') {
       message = 'Your are now friend with ${user.userName} \uD83D\uDE00';
     } else if (type == 'gift') {
@@ -118,7 +118,8 @@ class NotificationServices {
       body: jsonEncode(data),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'key=$key',
+        'Authorization':
+            'key=AUTH_KEY',
       },
     );
   }

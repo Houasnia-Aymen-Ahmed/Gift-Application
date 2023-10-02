@@ -235,7 +235,7 @@ const aboutSubTitleStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.w500);
 List<Text> quote() {
   return [
     Text(
-      "\" Fait les bon choix en silence et laisse ton succès faire le bruit. \"",
+      "\" Sometimes the most simple things can bring the most happiness. \"",
       textAlign: TextAlign.center,
       style: GoogleFonts.poppins(
         fontSize: 20,
@@ -245,7 +245,7 @@ List<Text> quote() {
       ),
     ),
     Text(
-      "- Frank Ocean -",
+      "- Izabella Scorupco -",
       textAlign: TextAlign.center,
       style: GoogleFonts.poppins(
         fontSize: 20,

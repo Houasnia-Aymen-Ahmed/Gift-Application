@@ -66,7 +66,7 @@ class AuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      print(e);
+      
       Get.back();
       snackBar(
         "Error\nLogging out",

@@ -128,12 +128,20 @@ class AboutContent extends StatelessWidget {
                     TextSpan(text: '* v1.0.0: ', style: aboutSubTitleStyle),
                     TextSpan(
                         text:
-                            'The initial version laid the foundation for sending gifts and messages.\n'),
+                            'The initial version laid the foundation for sending gifts and messages.\n\n'),
                     TextSpan(text: '* v2.0.0: ', style: aboutSubTitleStyle),
                     TextSpan(
                       text:
-                          'This major update brings network checking, UI improvements, and more, enhancing your gifting experience.',
-                    )
+                          'This major update brings network checking, UI improvements, and more, enhancing your gifting experience.\n\n',
+                    ),
+                    TextSpan(text: '* v2.0.1: ', style: aboutSubTitleStyle),
+                    TextSpan(
+                      text: 'Fixes found bugs.\n\n',
+                    ),
+                    TextSpan(text: '* v2.0.2: ', style: aboutSubTitleStyle),
+                    TextSpan(
+                      text: 'Changes some content (Bottom Sheet).\n\n',
+                    ),
                   ],
                 ),
               ),

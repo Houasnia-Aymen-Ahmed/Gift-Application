@@ -1,5 +1,5 @@
 # Gift-Application
-A simple mobile application that allows two friends to connect and exchange gifts and messages.
+A simple mobile application that allows people (introverts specifically) to show attention to others without getting in a long conversation.
 
 ### Table of Contents
 - [Description](#description)
@@ -12,8 +12,8 @@ A simple mobile application that allows two friends to connect and exchange gift
 - [License](#license)
 
 ## Description
-The Gift App is designed to connect two friends, allowing them to exchange gifts and messages seamlessly. 
-Users can create accounts, scan each other's QR codes to establish a connection, and then send messages or gifts. 
+The Gift App was basically made for introverts, as sometimes they won't to show others appreciation without getting into a deep conversation or a small talk. It's designed to connect friends, allowing them to exchange gifts and messages seamlessly. 
+Users can create accounts, scan each other's QR codes to establish a connection, and then send messages or gifts.
 The app features notifications for both messages and gifts and provides a home screen widget for quick access to friend's messages.
 ## Installation
 - Download the APK file from the releases section.

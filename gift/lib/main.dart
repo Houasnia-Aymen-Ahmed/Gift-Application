@@ -13,6 +13,7 @@ import 'package:gift/constants/theme_constants.dart';
 import 'package:gift/theme/theme_controller.dart';
 import 'package:gift/views/authenticate/authenticate.dart';
 import 'package:gift/views/home/home.dart';
+import 'package:gift/views/morse_code/morse_code_converter.dart';
 import 'package:gift/views/wrapper.dart';
 
 
@@ -73,6 +74,7 @@ class _GiftAppState extends State<GiftApp> {
         routes: {
           '/home': (context) => const Home(),
           '/auth': (context) => const Authenticate(),
+          '/morse': (context) => const MorseCodeConverter(),
           // other routes...
         },
       ),

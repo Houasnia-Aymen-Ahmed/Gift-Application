@@ -106,6 +106,12 @@ class _HomeState extends State<Home> {
                           backgroundColor: Colors.transparent,
                           appBar: AppBar(
                             actions: <Widget>[
+                              IconButton(
+                                icon: const Icon(Icons.translate),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/morse');
+                                },
+                              ),
                               TextButton.icon(
                                 style: ButtonStyle(
                                   iconSize:

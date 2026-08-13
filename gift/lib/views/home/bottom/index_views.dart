@@ -108,7 +108,7 @@ class _SecondIndexViewState extends State<SecondIndexView> {
           itemBuilder: (context, index) {
             String friendUid = widget.user.friendList[index];
             return Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(AppSpacing.sm),
               child: StreamBuilder(
                 stream: _databaseService.getUserDataStream(friendUid),
                 builder: (context, snapshot) {
@@ -123,11 +123,11 @@ class _SecondIndexViewState extends State<SecondIndexView> {
                         children: [
                           SlidableAction(
                             autoClose: true,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppRadius.xs),
                             onPressed: (context) =>
                                 _databaseService.updateUserSpecificData(
                                     friend: friendFromList.uid),
-                            padding: const EdgeInsets.all(5.0),
+                            padding: const EdgeInsets.all(AppSpacing.xs),
                             backgroundColor: Palette.boldPink,
                             foregroundColor: Colors.white,
                             icon: Icons.favorite_rounded,
@@ -141,10 +141,10 @@ class _SecondIndexViewState extends State<SecondIndexView> {
                         children: [
                           SlidableAction(
                             autoClose: true,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppRadius.xs),
                             onPressed: (context) =>
                                 deleteFriend(friendFromList.uid),
-                            backgroundColor: const Color(0xFFB71C1C),
+                            backgroundColor: Palette.errorColor,
                             foregroundColor: Colors.white,
                             icon: Icons.delete_rounded,
                             label: "Delete Friend",

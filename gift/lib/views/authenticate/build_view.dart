@@ -4,6 +4,7 @@ import 'package:gift/shared/loading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/auth.dart';
 import '../../constants/constants.dart';
+import '../../shared/pallete.dart';
 
 class BuildView extends StatefulWidget {
   final String title;
@@ -59,7 +60,7 @@ class _BuildViewState extends State<BuildView> {
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                   child: SingleChildScrollView(
@@ -75,7 +76,7 @@ class _BuildViewState extends State<BuildView> {
                             const Color(0xF2191622).withOpacity(1),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
                         border: Border.all(
                           width: 2,
                           color: Colors.white30,
@@ -223,7 +224,7 @@ class _BuildViewState extends State<BuildView> {
                               child: Text(
                                 _error,
                                 style: TextStyle(
-                                  color: Colors.red[900],
+                                  color: Palette.errorColor,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
                                 ),

@@ -91,7 +91,7 @@ class _SettingListTileState extends State<SettingListTile> {
         tileColor: Palette.semiPink,
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.xs),
           side: BorderSide(color: Palette.boldPink),
         ),
         trailing: widget.item.title == "About"

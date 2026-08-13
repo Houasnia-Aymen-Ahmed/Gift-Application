@@ -6,6 +6,7 @@ import '../../../models/user_of_gift.dart';
 import 'settings_list_tile.dart';
 import '../../qr_code_view/qrcode_page.dart';
 import '../../../constants/bottom_sheet_constants.dart';
+import '../../../constants/constants.dart';
 
 class BottomSheetContent {
   static Widget buildBottomSheetContent(
@@ -52,7 +53,7 @@ class BottomSheetContent {
         itemBuilder: (context, index) {
           final SettingList item = items[index];
           return Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(AppSpacing.xs),
             child: SettingListTile(
               item: item,
               user: user,

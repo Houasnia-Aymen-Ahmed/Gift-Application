@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gift/views/home/drawer/drawer_content.dart';
 import '../../../models/user_of_gift.dart';
 import '../../../shared/pallete.dart';
+import '../../../constants/constants.dart';
 
 class BuildDrawer extends StatelessWidget {
   final UserOfGift user;
@@ -16,12 +17,12 @@ class BuildDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(AppRadius.xxl),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Drawer(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(AppRadius.xxl),
           ),
           backgroundColor: Palette.pinkyPink.withOpacity(0.5),
           elevation: 10,

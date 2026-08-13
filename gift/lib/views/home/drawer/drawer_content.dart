@@ -92,7 +92,7 @@ class _BuildDrawerContentState extends State<BuildDrawerContent> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   color: Palette.pinkyPink,
                   boxShadow: const [
                     BoxShadow(
@@ -106,7 +106,7 @@ class _BuildDrawerContentState extends State<BuildDrawerContent> {
                 accountName: Text(
                   widget.user.userName,
                   style: GoogleFonts.poppins(
-                    color: Colors.white,
+                    color: Palette.bodyTextColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
@@ -139,13 +139,13 @@ class _BuildDrawerContentState extends State<BuildDrawerContent> {
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(AppSpacing.xl),
             child: Text(
               "Houasnia-Aymen-Ahmed\n© 2023-${DateTime.now().year} All rights reserved",
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w500,
-                color: Colors.white,
+                color: Palette.bodyTextColor,
               ),
             ),
           ),

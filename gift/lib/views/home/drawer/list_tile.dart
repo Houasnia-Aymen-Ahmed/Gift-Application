@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants/constants.dart';
+import '../../../shared/pallete.dart';
 
 class EditableListTile extends StatefulWidget {
   final String text;
@@ -50,23 +51,23 @@ class _EditableListTileState extends State<EditableListTile> {
 
   Widget _buildTrailingIcon() {
     if (!widget.isEditable) {
-      return const Icon(
+      return Icon(
         Icons.edit_off_rounded,
-        color: Colors.white,
+        color: Palette.iconColor,
       );
     } else {
       return _isEditing
           ? IconButton(
               onPressed: _saveChanges,
-              icon: const Icon(
+              icon: Icon(
                 Icons.check,
-                color: Colors.white,
+                color: Palette.iconColor,
                 size: 25,
               ),
             )
-          : const Icon(
+          : Icon(
               Icons.edit,
-              color: Colors.white,
+              color: Palette.iconColor,
               size: 25,
             );
     }
@@ -77,7 +78,7 @@ class _EditableListTileState extends State<EditableListTile> {
         titleAlignment: ListTileTitleAlignment.center,
         leading: Icon(
           widget.iconLeading,
-          color: Colors.white,
+          color: Palette.iconColor,
           size: 30,
         ),
         title: (widget.isEditable && _isEditing)
@@ -89,33 +90,33 @@ class _EditableListTileState extends State<EditableListTile> {
                       ? widget.fieldLength
                       : null,
                   decoration: drawerTextDecoration,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 19,
-                    color: Colors.white,
+                    color: Palette.bodyTextColor,
                   ),
                   controller: _textEditingController,
                 ),
               )
             : Text(
                 _text,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
+                  color: Palette.bodyTextColor,
                 ),
               ),
         subtitle: widget.fieldToUpdate == "Nickname"
-            ? const Text(
+            ? Text(
                 "Friend's nickname",
                 style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white70,
+                  color: Palette.bodyTextColor.withOpacity(0.7),
                 ),
               )
             : Text(
                 widget.fieldToUpdate,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white70,
+                  color: Palette.bodyTextColor.withOpacity(0.7),
                 ),
               ),
         trailing: _buildTrailingIcon(),

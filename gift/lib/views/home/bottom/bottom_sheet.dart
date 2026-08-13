@@ -33,7 +33,7 @@ class BottomSheetHelper {
       useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(35),
+          top: Radius.circular(AppRadius.xl),
         ),
       ),
       builder: (BuildContext context) {
@@ -42,7 +42,7 @@ class BottomSheetHelper {
           builder: (context, StateSetter setState) => Container(
             constraints: BoxConstraints(maxHeight: screenSize.height * 0.45),
             height: screenSize.height * 0.4,
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -65,7 +65,7 @@ class BottomSheetHelper {
                   height: 60,
                   decoration: BoxDecoration(
                     color: Palette.lightPink,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -163,7 +163,7 @@ class _BuildBodyState extends State<BuildBody> {
               ),
               Center(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
+                  borderRadius: BorderRadius.circular(AppRadius.round),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
@@ -173,7 +173,7 @@ class _BuildBodyState extends State<BuildBody> {
                       ),
                       decoration: BoxDecoration(
                         color: Palette.londonHue.withOpacity(0.25),
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(AppRadius.round),
                         border: Border.all(
                           width: 1,
                           color: Palette.pinkyPink,
@@ -181,7 +181,7 @@ class _BuildBodyState extends State<BuildBody> {
                       ),
                       child: Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.all(AppSpacing.lg),
                           child: StreamBuilder<ConversationMessage?>(
                             stream: _databaseService
                                 .latestMessageStream(widget.friend.uid),
@@ -239,7 +239,7 @@ class _BuildBodyState extends State<BuildBody> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Container(
-                              margin: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.all(AppSpacing.sm),
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   elevation: 0,
@@ -257,7 +257,7 @@ class _BuildBodyState extends State<BuildBody> {
                               ),
                             ),
                             Container(
-                              margin: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.all(AppSpacing.sm),
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   elevation: 0,

@@ -33,7 +33,7 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
             children: <Widget>[
               Center(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
@@ -43,7 +43,7 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                       ),
                       decoration: BoxDecoration(
                         color: Palette.londonHue.withOpacity(0.25),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.xs),
                         border: Border.all(
                           width: 1,
                           color: Palette.pinkyPink,
@@ -56,19 +56,19 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(AppRadius.xs),
                                 border: Border.all(
                                   width: 1,
                                   color: Palette.pinkyPink,
                                 ),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(AppSpacing.lg),
                                 child: Text(
                                   "No Friend Found",
                                   style: txt().copyWith(
                                     fontSize: 40.0,
-                                    color: Colors.red[900],
+                                    color: Palette.errorColor,
                                     fontWeight: FontWeight.normal,
                                   ),
                                   textAlign: TextAlign.center,
@@ -80,7 +80,7 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                               child: Icon(
                                 Icons.block_rounded,
                                 size: 150,
-                                color: Colors.red[900],
+                                color: Palette.errorColor,
                               ),
                             ),
                             const Spacer(flex: 2),
@@ -92,7 +92,7 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                                   width: 150,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(AppRadius.xs),
                                     border: Border.all(
                                       width: 1,
                                       color: Palette.pinkyPink,
@@ -102,11 +102,12 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                                     onPressed: () => BottomSheetHelper.show(
                                         context, widget.user, (index) {},
                                         preSelected: 1),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(10.0),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(AppSpacing.md),
                                       child: Text(
                                         "Add a friend\nfrom list",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 18, color: Colors.black),
                                         textAlign: TextAlign.center,
                                       ),
@@ -118,7 +119,7 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                                   width: 150,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(AppRadius.xs),
                                     border: Border.all(
                                       width: 1,
                                       color: Palette.pinkyPink,
@@ -133,7 +134,7 @@ class _BuildNoDataBodyState extends State<BuildNoDataBody> {
                                       ),
                                     ),
                                     child: const Padding(
-                                      padding: EdgeInsets.all(10.0),
+                                      padding: EdgeInsets.all(AppSpacing.md),
                                       child: Text(
                                         "Add a friend by\nscanning QR Code",
                                         style: TextStyle(

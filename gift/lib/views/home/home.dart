@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
               child: Text(
                 "Error When Fetching User Data: ${snapshot.error}",
                 style: TextStyle(
-                  color: Colors.red[900],
+                  color: Palette.errorColor,
                 ),
               ),
             );
@@ -66,7 +66,7 @@ class _HomeState extends State<Home> {
                     child: Text(
                       "Error When Fetching Friend Data: ${snapshot.error}",
                       style: TextStyle(
-                        color: Colors.red[900],
+                        color: Palette.errorColor,
                       ),
                     ),
                   );

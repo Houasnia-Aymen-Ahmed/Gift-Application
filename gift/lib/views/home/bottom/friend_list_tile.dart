@@ -3,6 +3,7 @@ import 'package:gift/models/user_of_gift.dart';
 import 'package:gift/services/database.dart';
 import 'package:gift/services/widget_service.dart';
 import 'package:gift/shared/pallete.dart';
+import 'package:gift/constants/constants.dart';
 
 class FriendListTile extends StatefulWidget {
   final UserOfGift user;
@@ -33,13 +34,13 @@ class _FriendListTileState extends State<FriendListTile> {
 
   @override
   Widget build(BuildContext context) => ListTile(
-        contentPadding: const EdgeInsets.all(8.0),
+        contentPadding: const EdgeInsets.all(AppSpacing.sm),
         tileColor: Palette.semiPink,
         style: ListTileStyle.drawer,
         iconColor: Palette.lightPink,
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.xs),
           side: BorderSide(color: Palette.boldPink),
         ),
         leading: Container(

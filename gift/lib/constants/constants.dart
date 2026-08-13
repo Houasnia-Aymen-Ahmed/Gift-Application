@@ -7,6 +7,28 @@ import '../models/settings_list.dart';
 import '../models/user_of_gift.dart';
 import '../views/home/drawer/list_tile.dart';
 
+/// Single source of truth for spacing so padding/margin values stay
+/// consistent across views instead of scattered magic numbers.
+class AppSpacing {
+  static const double xs = 5;
+  static const double sm = 8;
+  static const double md = 10;
+  static const double lg = 15;
+  static const double xl = 20;
+}
+
+/// Single source of truth for corner radii so cards/buttons/sheets
+/// stay consistent across views instead of scattered magic numbers.
+class AppRadius {
+  static const double xs = 10;
+  static const double sm = 15;
+  static const double md = 20;
+  static const double lg = 25;
+  static const double xl = 35;
+  static const double xxl = 40;
+  static const double round = 50;
+}
+
 const textInputDecoation = InputDecoration(
   contentPadding: EdgeInsets.fromLTRB(27, 20, 27, 20),
   hintText: "Email",
@@ -73,7 +95,7 @@ final textDisabled = Text(
 
 outlineBorder() {
   return OutlineInputBorder(
-    borderRadius: BorderRadius.circular(15),
+    borderRadius: BorderRadius.circular(AppRadius.sm),
     borderSide: BorderSide(
       color: Palette.boldPink,
       width: 1,

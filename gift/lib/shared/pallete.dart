@@ -25,6 +25,7 @@ class Palette {
       !Get.isDarkMode ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
   static Color get bodyTextColor =>
       !Get.isDarkMode ? Colors.black : Colors.white;
+  static Color get errorColor => const Color(0xFFB71C1C);
   static AssetImage getBgImage(bool isDarkMode) {
     return !isDarkMode
         ? const AssetImage("assets/images/home_background.png")

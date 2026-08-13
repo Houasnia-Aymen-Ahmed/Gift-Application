@@ -3,6 +3,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:gift/constants/constants.dart';
 import '../../models/user_of_gift.dart';
 import '../../services/database.dart';
+import '../../services/push_worker.dart';
 
 class ScanQRCode extends StatefulWidget {
   final UserOfGift myUser;
@@ -41,6 +42,11 @@ class _ScanQRCodeState extends State<ScanQRCode> {
     }
 
     await _databaseService.sendFriendRequest(friendUserData.uid);
+    PushWorkerService.notify(
+      recipientUid: friendUserData.uid,
+      kind: 'friend',
+      senderName: widget.myUser.userName,
+    );
 
     if (mounted) Navigator.of(context).pop();
   }

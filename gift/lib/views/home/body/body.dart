@@ -8,6 +8,7 @@ import '../../../models/conversation_message.dart';
 import '../../../models/user_of_gift.dart';
 import '../../../services/database.dart';
 import '../../../services/notif.dart';
+import '../../../services/push_worker.dart';
 import '../../../constants/constants.dart';
 import '../../../constants/bottom_sheet_constants.dart';
 
@@ -73,6 +74,11 @@ class _BuildBodyState extends State<BuildBody> {
       text: giftId,
       kind: 'gift',
     );
+    PushWorkerService.notify(
+      recipientUid: friendUser.uid,
+      kind: 'gift',
+      senderName: myUser.userName,
+    );
   }
 
   Future<void> _showGiftPicker(
@@ -116,6 +122,11 @@ class _BuildBodyState extends State<BuildBody> {
         otherUid: friendUser.uid,
         text: msgContent,
         kind: 'message',
+      );
+      PushWorkerService.notify(
+        recipientUid: friendUser.uid,
+        kind: 'message',
+        senderName: myUser.userName,
       );
       messageController.clear();
       msgContent = "";

@@ -1,17 +1,25 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
-import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gift/models/conversation_message.dart';
+import 'package:gift/models/user_of_gift.dart';
 import 'package:gift/views/home/home.dart';
 import 'database.dart';
 
+/// No Cloud Function is deployed for this project (requires the Blaze
+/// plan), so there is no server-side push delivery. Everything here is a
+/// same-device fallback: it only fires while this app process is alive
+/// (foreground or backgrounded), never when the app is killed or on a
+/// friend's other device. FCM token registration is still kept so that
+/// deploying `functions/` later needs no client changes.
 class NotificationServices {
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   static bool _initialized = false;
+  static const String _channelId = 'high_importance_channel';
 
   void initialize(BuildContext context) {
     if (_initialized) return;
@@ -19,7 +27,8 @@ class NotificationServices {
     requestNotificationPermission();
     isTokenRefresh();
     getDeviceToken().then((value) {});
-    firebaseInit(context);
+    _initLocalNotifications(context);
+    firebaseInit();
     setupInteractMessage(context);
   }
 
@@ -41,15 +50,19 @@ class NotificationServices {
     return token!;
   }
 
-  void initLocalNotification(
-      BuildContext context, RemoteMessage message) async {
+  Future<void> _initLocalNotifications(BuildContext context) async {
     var androidInit =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
     var initSettings = InitializationSettings(android: androidInit);
     await _flutterLocalNotificationsPlugin.initialize(
       settings: initSettings,
-      onDidReceiveNotificationResponse: (payload) {
-        handleMessage(context, message);
+      onDidReceiveNotificationResponse: (response) {
+        Future.microtask(
+          () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          ),
+        );
       },
     );
   }
@@ -60,39 +73,16 @@ class NotificationServices {
     });
   }
 
-  void firebaseInit(BuildContext context) {
-    FirebaseMessaging.onMessage.listen((message) {
-      if (Platform.isAndroid) {
-        initLocalNotification(context, message);
-        showNotif(message);
-      } else {
-        showNotif(message);
-      }
-    });
+  // Kept so a real push still displays correctly if functions/ ever gets
+  // deployed — currently nothing sends one, so this listener stays idle.
+  void firebaseInit() {
+    FirebaseMessaging.onMessage.listen(showNotif);
   }
 
-  RemoteMessage data = const RemoteMessage();
-
   Future<void> setupInteractMessage(BuildContext context) async {
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      handleNotificationTap(context, data);
-    }
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       handleNotificationTap(context, event);
     });
-  }
-
-  void handleMessage(BuildContext context, RemoteMessage message) {
-    if (message.data['type'] == 'friend') {
-      Future.microtask(
-        () => Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Home()),
-        ),
-      );
-    }
   }
 
   Future<void> handleNotificationTap(
@@ -105,11 +95,15 @@ class NotificationServices {
     }
   }
 
-  static const String _channelId = 'high_importance_channel';
-
   Future<void> showNotif(RemoteMessage message) async {
-    AndroidNotificationDetails androidNotificationDetails =
-        const AndroidNotificationDetails(
+    await _showLocalNotification(
+      message.notification?.title ?? 'Gift',
+      message.notification?.body ?? '',
+    );
+  }
+
+  Future<void> _showLocalNotification(String title, String body) async {
+    const androidNotificationDetails = AndroidNotificationDetails(
       _channelId,
       'High Importance Notification',
       channelDescription: '',
@@ -117,18 +111,26 @@ class NotificationServices {
       priority: Priority.high,
       ticker: '',
     );
-
-    NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
+    const notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await _flutterLocalNotificationsPlugin.show(
+      id: 0,
+      title: title,
+      body: body,
+      notificationDetails: notificationDetails,
     );
+  }
 
-    Future.delayed(Duration.zero, () {
-      _flutterLocalNotificationsPlugin.show(
-        id: 0,
-        title: message.notification!.title.toString(),
-        body: message.notification!.body.toString(),
-        notificationDetails: notificationDetails,
-      );
-    });
+  Future<void> notifyConversationMessage(
+      UserOfGift sender, ConversationMessage message) async {
+    final body = message.kind == 'gift'
+        ? '${sender.userName} sent you a gift 🎁'
+        : '${sender.userName} sent you a message 📩';
+    await _showLocalNotification('Gift', body);
+  }
+
+  Future<void> notifyFriendRequest(UserOfGift sender) async {
+    await _showLocalNotification(
+        'Gift', '${sender.userName} wants to be your friend 😀');
   }
 }

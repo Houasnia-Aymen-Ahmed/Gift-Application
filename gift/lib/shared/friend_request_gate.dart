@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/friend_request.dart';
 import '../services/database.dart';
+import '../services/notif.dart';
 
 class FriendRequestGate extends StatefulWidget {
   final Widget child;
@@ -13,6 +14,7 @@ class FriendRequestGate extends StatefulWidget {
 
 class _FriendRequestGateState extends State<FriendRequestGate> {
   final DatabaseService _databaseService = DatabaseService();
+  final NotificationServices _notifServices = NotificationServices();
   final Set<String> _shownRequestIds = {};
   StreamSubscription<List<FriendRequest>>? _incomingSub;
   StreamSubscription<List<FriendRequest>>? _outgoingSub;
@@ -20,6 +22,7 @@ class _FriendRequestGateState extends State<FriendRequestGate> {
   @override
   void initState() {
     super.initState();
+    _notifServices.initialize(context);
     _incomingSub =
         _databaseService.incomingFriendRequests().listen(_handleIncoming);
     _outgoingSub =
@@ -42,6 +45,9 @@ class _FriendRequestGateState extends State<FriendRequestGate> {
 
   Future<void> _showRequestDialog(FriendRequest request) async {
     final sender = await _databaseService.getUserDataOnce(request.from);
+    if (sender != null) {
+      _notifServices.notifyFriendRequest(sender);
+    }
     if (!mounted) return;
     await showDialog(
       context: context,

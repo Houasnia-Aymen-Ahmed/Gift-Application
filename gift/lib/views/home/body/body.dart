@@ -32,11 +32,36 @@ class _BuildBodyState extends State<BuildBody> {
   final txtFieldkey = GlobalKey();
   String msgContent = "";
   bool isShown = true;
+  StreamSubscription<ConversationMessage?>? _incomingMessageSub;
+  bool _caughtUpOnHistory = false;
+  String? _lastSeenMessageId;
 
   @override
   void initState() {
     super.initState();
     notifServices.initialize(context);
+    _incomingMessageSub = _databaseService
+        .latestMessageStream(widget.friend.uid)
+        .listen(_handleIncomingMessage);
+  }
+
+  void _handleIncomingMessage(ConversationMessage? message) {
+    if (!_caughtUpOnHistory) {
+      _caughtUpOnHistory = true;
+      _lastSeenMessageId = message?.id;
+      return;
+    }
+    if (message == null || message.id == _lastSeenMessageId) return;
+    _lastSeenMessageId = message.id;
+    if (message.from == widget.user.uid) return;
+    notifServices.notifyConversationMessage(widget.friend, message);
+  }
+
+  @override
+  void dispose() {
+    _incomingMessageSub?.cancel();
+    messageController.dispose();
+    super.dispose();
   }
 
   Future<void> _sendGift(

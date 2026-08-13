@@ -14,6 +14,7 @@ class UserOfGift {
   bool enableNotif;
   Map nicknames;
   bool exists;
+  List widgetFriends;
 
   UserOfGift({
     this.userName = "username",
@@ -31,5 +32,6 @@ class UserOfGift {
     this.enableNotif = true,
     this.nicknames = const {},
     this.exists = true,
+    this.widgetFriends = const [],
   });
 }

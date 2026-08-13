@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gift/models/user_of_gift.dart';
+import 'package:gift/services/database.dart';
+import 'package:gift/services/widget_service.dart';
 import 'package:gift/shared/pallete.dart';
 
 class FriendListTile extends StatefulWidget {
@@ -17,6 +19,18 @@ class FriendListTile extends StatefulWidget {
 }
 
 class _FriendListTileState extends State<FriendListTile> {
+  final DatabaseService _databaseService = DatabaseService();
+  final WidgetService _widgetService = WidgetService();
+  late bool _isInWidget;
+
+  @override
+  void initState() {
+    super.initState();
+    _isInWidget = _widgetService
+        .eligibleFriendUids(widget.user)
+        .contains(widget.friendUser.uid);
+  }
+
   @override
   Widget build(BuildContext context) => ListTile(
         contentPadding: const EdgeInsets.all(8.0),
@@ -50,6 +64,19 @@ class _FriendListTileState extends State<FriendListTile> {
         subtitle: Text(
           widget.user.nicknames[widget.friendUser.uid] ?? 'nickname',
           style: const TextStyle(fontSize: 20),
+        ),
+        trailing: IconButton(
+          tooltip: _isInWidget ? 'Showing on widget' : 'Not on widget',
+          icon: Icon(
+            _isInWidget ? Icons.widgets_rounded : Icons.widgets_outlined,
+            color: _isInWidget ? Palette.boldPink : Palette.lightPink,
+          ),
+          onPressed: () {
+            final newValue = !_isInWidget;
+            setState(() => _isInWidget = newValue);
+            _databaseService.setWidgetFriend(
+                widget.user, widget.friendUser.uid, newValue);
+          },
         ),
       );
 }

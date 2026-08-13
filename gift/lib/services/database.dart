@@ -64,6 +64,7 @@ class DatabaseService {
   Future<void> deleteFriendFromList(String itemToRemove) async {
     await userColl.doc(_auth.currentUsr!.uid).update({
       "friendList": FieldValue.arrayRemove([itemToRemove]),
+      "widgetFriends": FieldValue.arrayRemove([itemToRemove]),
     });
     await userColl.doc(_auth.currentUsr!.uid).update({
       "nicknames.$itemToRemove": FieldValue.delete(),
@@ -133,6 +134,25 @@ class DatabaseService {
     }
   }
 
+  /// An empty `widgetFriends` means "every friend is in widget rotation"
+  /// (see WidgetService.eligibleFriendUids) — so turning one friend off
+  /// from that implicit-all state has to first materialize the full list
+  /// before removing them, otherwise there'd be nothing to distinguish
+  /// "never customized" from "explicitly chose nobody".
+  Future<void> setWidgetFriend(
+      UserOfGift user, String friendUid, bool include) async {
+    List<String> current = user.widgetFriends.cast<String>().toList();
+    if (current.isEmpty) {
+      current = user.friendList.cast<String>().toList();
+    }
+    if (include) {
+      if (!current.contains(friendUid)) current.add(friendUid);
+    } else {
+      current.remove(friendUid);
+    }
+    await userColl.doc(user.uid).update({"widgetFriends": current});
+  }
+
   Future<void> incrementGiftSent(String uid) async {
     await userColl.doc(uid).update({
       "giftSent": FieldValue.increment(1),
@@ -164,6 +184,7 @@ class DatabaseService {
         enableNotif: doc["enableNotif"] ?? true,
         nicknames: Map<String, String>.from(doc["nicknames"] ?? {}),
         exists: true,
+        widgetFriends: doc["widgetFriends"] ?? [],
       );
     } else {
       return UserOfGift(
@@ -182,6 +203,7 @@ class DatabaseService {
         enableNotif: true,
         nicknames: {},
         exists: false,
+        widgetFriends: [],
       );
     }
   }

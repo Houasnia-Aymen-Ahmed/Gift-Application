@@ -28,8 +28,8 @@ export default {
       return new Response("Bad request", { status: 400 });
     }
 
-    const { recipientUid, kind, senderName } = body;
-    if (!recipientUid || !kind || !senderName) {
+    const { recipientUid, senderUid, kind, senderName } = body;
+    if (!recipientUid || !senderUid || !kind || !senderName) {
       return new Response("Missing fields", { status: 400 });
     }
 
@@ -53,7 +53,7 @@ export default {
             ? `${senderName} wants to be your friend 😀`
             : `${senderName} sent you a message 📩`;
 
-      await sendFcm(env, accessToken, token, title, notifBody, kind);
+      await sendFcm(env, accessToken, token, title, notifBody, kind, senderUid);
 
       return new Response("ok", { status: 200 });
     } catch (err) {
@@ -134,7 +134,7 @@ async function getFirestoreDoc(env, accessToken, uid) {
   return res.json();
 }
 
-async function sendFcm(env, accessToken, token, title, body, kind) {
+async function sendFcm(env, accessToken, token, title, body, kind, senderUid) {
   const url = `https://fcm.googleapis.com/v1/projects/${env.GCP_PROJECT_ID}/messages:send`;
   const res = await fetch(url, {
     method: "POST",
@@ -146,7 +146,7 @@ async function sendFcm(env, accessToken, token, title, body, kind) {
       message: {
         token,
         notification: { title, body },
-        data: { type: kind, message: body },
+        data: { type: kind, message: body, from: senderUid },
       },
     }),
   });

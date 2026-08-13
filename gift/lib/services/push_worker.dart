@@ -13,6 +13,7 @@ class PushWorkerService {
 
   static Future<void> notify({
     required String recipientUid,
+    required String senderUid,
     required String kind,
     required String senderName,
   }) async {
@@ -26,6 +27,7 @@ class PushWorkerService {
         },
         body: jsonEncode({
           'recipientUid': recipientUid,
+          'senderUid': senderUid,
           'kind': kind,
           'senderName': senderName,
         }),

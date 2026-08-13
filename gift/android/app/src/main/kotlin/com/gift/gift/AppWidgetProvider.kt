@@ -17,12 +17,11 @@ class AppWidgetProvider : HomeWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_layout).apply {
 
                 // Open App on Widget Click
-                
-                val pendingIntent: PendingIntent = HomeWidgetLaunchIntent.getActivity(context,
+                val launchIntent: PendingIntent = HomeWidgetLaunchIntent.getActivity(context,
                         MainActivity::class.java)
+                setOnClickPendingIntent(R.id.widget_root, launchIntent)
 
-                setOnClickPendingIntent(R.id.widget_root, pendingIntent)
-
+                val friendName = widgetData.getString("_friendName", "")
                 var textContent = widgetData.getString("_textContent", "")
                 var textColor = android.R.color.white
 
@@ -31,12 +30,19 @@ class AppWidgetProvider : HomeWidgetProvider() {
                     textColor = android.R.color.darker_gray
                 }
 
+                setTextViewText(R.id.tv_friend_name, friendName)
                 setTextViewText(R.id.tv_counter, textContent)
                 setTextColor(R.id.tv_counter, context.resources.getColor(textColor))
 
-                // Pending intent to update counter on button click
-                val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context,
-                        Uri.parse("gift://updatecounter"))
+                // Prev/next friend cycling — handled by the Dart interactivity
+                // callback registered via HomeWidget.registerInteractivityCallback.
+                val prevIntent = HomeWidgetBackgroundIntent.getBroadcast(context,
+                        Uri.parse("gift://widget_prev"))
+                setOnClickPendingIntent(R.id.btn_widget_prev, prevIntent)
+
+                val nextIntent = HomeWidgetBackgroundIntent.getBroadcast(context,
+                        Uri.parse("gift://widget_next"))
+                setOnClickPendingIntent(R.id.btn_widget_next, nextIntent)
             }
             appWidgetManager.updateAppWidget(widgetId, views)
         }

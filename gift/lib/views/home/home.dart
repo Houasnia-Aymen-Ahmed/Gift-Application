@@ -8,7 +8,7 @@ import 'package:gift/shared/pallete.dart';
 import 'package:gift/shared/show_logout_dialog_box.dart';
 import 'package:gift/theme/theme_controller.dart';
 import 'package:gift/views/home/no_friend_home.dart';
-import 'package:home_widget/home_widget.dart';
+import 'package:gift/services/widget_service.dart';
 import 'body/body.dart';
 import 'drawer/drawer.dart';
 
@@ -22,22 +22,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   final DatabaseService _databaseService = DatabaseService();
+  final WidgetService _widgetService = WidgetService();
   UserOfGift? myUser;
   UserOfGift? friendUser;
-
-  Future<void> updateAppWidget() async {
-    if (myUser != null && friendUser != null) {
-      final latest = await _databaseService.latestMessageOnce(friendUser!.uid);
-      await HomeWidget.saveWidgetData<String>(
-        '_textContent',
-        latest?.kind == 'message' ? latest!.text : '',
-      );
-      await HomeWidget.updateWidget(
-        name: 'AppWidgetProvider',
-        iOSName: 'AppWidgetProvider',
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) => StreamBuilder<UserOfGift>(
@@ -87,7 +74,7 @@ class _HomeState extends State<Home> {
                   return NoFriendHome(myUser: myUser!);
                 } else {
                   friendUser = snapshot.data;
-                  updateAppWidget();
+                  _widgetService.ensureInitialPin(myUser!);
                   return GetBuilder<ThemeController>(
                     builder: (themeController) {
                       return Container(

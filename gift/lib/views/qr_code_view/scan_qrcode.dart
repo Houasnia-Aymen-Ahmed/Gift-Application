@@ -44,6 +44,7 @@ class _ScanQRCodeState extends State<ScanQRCode> {
     await _databaseService.sendFriendRequest(friendUserData.uid);
     PushWorkerService.notify(
       recipientUid: friendUserData.uid,
+      senderUid: widget.myUser.uid,
       kind: 'friend',
       senderName: widget.myUser.userName,
     );

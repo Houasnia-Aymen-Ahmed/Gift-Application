@@ -9,6 +9,7 @@ import '../../../models/user_of_gift.dart';
 import '../../../services/database.dart';
 import '../../../services/notif.dart';
 import '../../../services/push_worker.dart';
+import '../../../services/widget_service.dart';
 import '../../../constants/constants.dart';
 import '../../../constants/bottom_sheet_constants.dart';
 
@@ -28,6 +29,7 @@ class BuildBody extends StatefulWidget {
 class _BuildBodyState extends State<BuildBody> {
   final NotificationServices notifServices = NotificationServices();
   final DatabaseService _databaseService = DatabaseService();
+  final WidgetService _widgetService = WidgetService();
   final messageController = TextEditingController();
   static const int maxCharacterCount = 50;
   final txtFieldkey = GlobalKey();
@@ -56,6 +58,9 @@ class _BuildBodyState extends State<BuildBody> {
     _lastSeenMessageId = message.id;
     if (message.from == widget.user.uid) return;
     notifServices.notifyConversationMessage(widget.friend, message);
+    // Push's own background handler only runs while the app is
+    // backgrounded/closed; this covers the foreground case.
+    _widgetService.refreshIfPinned(widget.friend.uid);
   }
 
   @override
@@ -76,6 +81,7 @@ class _BuildBodyState extends State<BuildBody> {
     );
     PushWorkerService.notify(
       recipientUid: friendUser.uid,
+      senderUid: myUser.uid,
       kind: 'gift',
       senderName: myUser.userName,
     );
@@ -125,6 +131,7 @@ class _BuildBodyState extends State<BuildBody> {
       );
       PushWorkerService.notify(
         recipientUid: friendUser.uid,
+        senderUid: myUser.uid,
         kind: 'message',
         senderName: myUser.userName,
       );

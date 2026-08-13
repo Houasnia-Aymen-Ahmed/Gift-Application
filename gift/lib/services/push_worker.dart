@@ -7,9 +7,9 @@ import 'package:http/http.dart' as http;
 /// Until then this silently no-ops — the in-app notification fallback in
 /// notif.dart still covers the case where both apps are open.
 class PushWorkerService {
-  static const String _workerUrl = ''; // e.g. https://gift-notify.<subdomain>.workers.dev
+  static const String _workerUrl = 'https://gift-notify.aymenaymen2056.workers.dev/';
   static const String _sharedSecret =
-      'efc68e5e2e4c3e0b5e85e3981f0df7bd109d820aeee7da6a0f3df74d84fa25e';
+      '99f864cfae143ad934b214719b8bae5534b9a891d60bdf43a60122ef4380d2d7';
 
   static Future<void> notify({
     required String recipientUid,

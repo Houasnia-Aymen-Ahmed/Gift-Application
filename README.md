@@ -26,7 +26,7 @@ The app features notifications for both messages and gifts and provides a home s
 <img src="https://github.com/Houasnia-Aymen-Ahmed/Gift-Application/assets/75532100/d47af01d-538a-452f-acb3-998205bd879d" width="250"><br><br>
 
 * **QR Code for Friends linking**
-    - In order to link with his friend, the user can either scan his friend's qr code or let his friend scan his. After the successfull scan both users are now best friends and they would be redirected to the home page.
+    - In order to link with his friend, the user can either scan his friend's qr code or let his friend scan his. Scanning sends a friend request that the other user has to accept before they become friends and get redirected to the home page.
 <img src="https://github.com/Houasnia-Aymen-Ahmed/Gift-Application/assets/75532100/955030dc-ab77-4388-a975-46a72d52c04e" width="250">
 <img src="https://github.com/Houasnia-Aymen-Ahmed/Gift-Application/assets/75532100/f4aa093c-7521-4847-9518-a90e349cc94d" width="250"><br><br>
 
@@ -35,7 +35,7 @@ The app features notifications for both messages and gifts and provides a home s
     - Can also see how many gifts his friend has sent and what his friend has wrotten him as a message.
     - He'll get notifications about gift & messages that has been sent to him.
     - The user can send message from the text field shown at the button
-    - In order to send gifts, the user needs to send an **empty message** by simply clicking on the send button in home page without writing any message
+    - In order to send a gift, the user taps the **gift button** next to the message field and picks one from the gift catalog
 <img src="https://github.com/Houasnia-Aymen-Ahmed/Gift-Application/assets/75532100/8b550c4b-8c68-4a2f-af6f-57356fd45e17" width="250">
 <img src="https://github.com/Houasnia-Aymen-Ahmed/Gift-Application/assets/75532100/8e0bcf2f-e394-42fa-a366-15d251f9b7de" width="250"><br><br>
 

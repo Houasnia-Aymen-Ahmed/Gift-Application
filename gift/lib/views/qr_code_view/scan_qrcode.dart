@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:gift/services/notif.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:gift/constants/constants.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../../models/user_of_gift.dart';
 import '../../services/database.dart';
 
@@ -18,79 +16,39 @@ class ScanQRCode extends StatefulWidget {
 }
 
 class _ScanQRCodeState extends State<ScanQRCode> {
-  final qrKey = GlobalKey(debugLabel: "QR");
   final DatabaseService _databaseService = DatabaseService();
-  late Stream<UserOfGift> userStream;
-  late UserOfGift? myUserData;
-  late UserOfGift? friendUserData;
-  Barcode? code;
-  QRViewController? controller;
-  bool _isDisposed = false;
+  final MobileScannerController controller = MobileScannerController();
+  String? lastCode;
+  String? errorText;
+  bool _hasScanned = false;
 
-  @override
-  void initState() {
-    super.initState();
-    userStream = _databaseService.getUserDataStream(widget.myUser.uid);
-    userStream.listen((user) {
-      setState(() {
-        myUserData = user;
-      });
-    });
-  }
+  Future<void> _handleDetection(BarcodeCapture capture) async {
+    if (_hasScanned) return;
+    final scannedCode = capture.barcodes.firstOrNull?.rawValue;
+    if (scannedCode == null || scannedCode.isEmpty) return;
+    if (scannedCode == widget.myUser.uid) return;
 
-  void onQRViewCreated(QRViewController controller) {
-    setState(() => this.controller = controller);
-    controller.scannedDataStream.listen(
-      (code) => setState(
-        () {
-          this.code = code;
-          _handleScannedUser(code.code!);
-        },
-      ),
-    );
-  }
+    _hasScanned = true;
+    setState(() => lastCode = scannedCode);
+    await controller.stop();
 
-  void _handleScannedUser(String scannedCode) {
-    _databaseService.getUserDataStream(scannedCode).listen((user) {
-      friendUserData = user;
-      if (mounted) {
-        onQRScanSuccess();
-      }
-    });
-  }
-
-  void onQRScanSuccess() {
-    if (friendUserData != null) {
-      NotificationServices()
-          .sendNotif(friendUserData!.token, myUserData!, 'friend', "");
-
-      String usrUid = myUserData!.uid;
-      String friendUid = friendUserData!.uid;
-      _databaseService.updateUserSpecificData(
-          uid: myUserData!.uid, friend: friendUid, addFriend: friendUid);
-      _databaseService.updateUserSpecificData(
-          uid: friendUserData?.uid, friend: usrUid, addFriend: usrUid);
+    final friendUserData = await _databaseService.getUserDataOnce(scannedCode);
+    if (friendUserData == null) {
+      setState(() => errorText = "Invalid QR code");
+      _hasScanned = false;
+      await controller.start();
+      return;
     }
-  }
 
-  @override
-  void reassemble() async {
-    if (!_isDisposed) {
-      super.reassemble();
-      if (Platform.isAndroid) {
-        await controller!.pauseCamera();
-      }
-      controller!.resumeCamera();
-    }
+    await _databaseService.sendFriendRequest(friendUserData.uid);
+
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
   void dispose() {
-    if (mounted) {
-      super.dispose();
-      _isDisposed = true;
-      controller?.dispose();
-    }
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -98,7 +56,10 @@ class _ScanQRCodeState extends State<ScanQRCode> {
         body: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            buildQrView(context),
+            MobileScanner(
+              controller: controller,
+              onDetect: _handleDetection,
+            ),
             Positioned(
               bottom: 50,
               child: Container(
@@ -108,7 +69,8 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  code != null ? ":${code!.code}" : "Result not found",
+                  errorText ??
+                      (lastCode != null ? ":$lastCode" : "Result not found"),
                   maxLines: 3,
                   style: txt().copyWith(
                     color: Colors.white,
@@ -129,43 +91,24 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     IconButton(
-                      onPressed: () async {
-                        await controller?.toggleFlash();
-                        setState(() {});
-                      },
-                      icon: FutureBuilder<bool?>(
-                        future: controller?.getFlashStatus(),
-                        builder: (context, snapshot) {
-                          if (snapshot.data != null) {
-                            return Icon(
-                              snapshot.data!
-                                  ? Icons.flash_on_rounded
-                                  : Icons.flash_off_rounded,
-                              color: Colors.white,
-                            );
-                          } else {
-                            return Container();
-                          }
+                      onPressed: () => controller.toggleTorch(),
+                      icon: ValueListenableBuilder(
+                        valueListenable: controller,
+                        builder: (context, state, child) {
+                          return Icon(
+                            state.torchState == TorchState.on
+                                ? Icons.flash_on_rounded
+                                : Icons.flash_off_rounded,
+                            color: Colors.white,
+                          );
                         },
                       ),
                     ),
                     IconButton(
-                      onPressed: () async {
-                        await controller?.flipCamera();
-                        setState(() {});
-                      },
-                      icon: FutureBuilder(
-                        future: controller?.getCameraInfo(),
-                        builder: (context, snapshot) {
-                          if (snapshot.data != null) {
-                            return const Icon(
-                              Icons.flip_camera_android_rounded,
-                              color: Colors.white,
-                            );
-                          } else {
-                            return Container();
-                          }
-                        },
+                      onPressed: () => controller.switchCamera(),
+                      icon: const Icon(
+                        Icons.flip_camera_android_rounded,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -173,19 +116,6 @@ class _ScanQRCodeState extends State<ScanQRCode> {
               ),
             )
           ],
-        ),
-      );
-
-  Widget buildQrView(BuildContext context) => QRView(
-        key: qrKey,
-        onQRViewCreated: onQRViewCreated,
-        overlay: QrScannerOverlayShape(
-          borderRadius: 25,
-          borderColor: const Color(0xF2191622).withOpacity(1),
-          overlayColor: const Color(0xF2191622).withOpacity(0.5),
-          borderLength: 50,
-          borderWidth: 20,
-          cutOutSize: MediaQuery.of(context).size.width * 0.75,
         ),
       );
 }

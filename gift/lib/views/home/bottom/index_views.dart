@@ -88,22 +88,15 @@ class SecondIndexView extends StatefulWidget {
 
 class _SecondIndexViewState extends State<SecondIndexView> {
   final DatabaseService _databaseService = DatabaseService();
-  List friendList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    friendList = widget.user.friendList;
-  }
 
   void deleteFriend(String friendUid) {
-    setState(() => friendList.remove(friendUid));
     if (widget.user.friend == friendUid) {
-      _databaseService.updateUserSpecificData(friend: "0");
-      _databaseService.deleteFriendFromList(friendUid);
-    } else {
-      _databaseService.deleteFriendFromList(friendUid);
+      final remaining =
+          widget.user.friendList.where((uid) => uid != friendUid).toList();
+      _databaseService.updateUserSpecificData(
+          friend: remaining.isEmpty ? "" : remaining.first as String);
     }
+    _databaseService.deleteFriendFromList(friendUid);
   }
 
   @override
@@ -113,7 +106,7 @@ class _SecondIndexViewState extends State<SecondIndexView> {
         child: ListView.builder(
           itemCount: widget.user.friendList.length,
           itemBuilder: (context, index) {
-            String friendUid = friendList[index];
+            String friendUid = widget.user.friendList[index];
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: StreamBuilder(

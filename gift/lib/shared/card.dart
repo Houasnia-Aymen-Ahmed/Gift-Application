@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gift/models/user_of_gift.dart';
 import 'package:gift/shared/pallete.dart';
 import '../constants/constants.dart';
+import '../services/database.dart';
 
 class CustomCard extends StatefulWidget {
   final UserOfGift user;
@@ -19,6 +20,8 @@ class CustomCard extends StatefulWidget {
 }
 
 class _CustomCardState extends State<CustomCard> {
+  final DatabaseService _databaseService = DatabaseService();
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -100,24 +103,27 @@ class _CustomCardState extends State<CustomCard> {
                   endIndent: 55,
                   indent: 55,
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${widget.user.giftRecieved}",
-                      style: txt().copyWith(
-                        fontSize: 30.0,
-                        color: Palette.bodyTextColor,
+                StreamBuilder<int>(
+                  stream: _databaseService.giftCountStream(widget.friend.uid),
+                  builder: (context, snapshot) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${snapshot.data ?? 0}",
+                        style: txt().copyWith(
+                          fontSize: 30.0,
+                          color: Palette.bodyTextColor,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Gifts",
-                      style: txt().copyWith(
-                        fontSize: 30.0,
-                        color: Palette.bodyTextColor,
+                      Text(
+                        "Gifts",
+                        style: txt().copyWith(
+                          fontSize: 30.0,
+                          color: Palette.bodyTextColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

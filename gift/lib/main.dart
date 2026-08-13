@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gift/models/user.dart';
 import 'package:gift/services/auth.dart';
 import 'package:gift/services/dependency_injection.dart';
@@ -18,7 +17,6 @@ import 'package:gift/views/wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_flutterMessagingBackgroundHandler);
   DependencyInjection.init();
@@ -56,25 +54,27 @@ class _GiftAppState extends State<GiftApp> {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.put(ThemeController());
-    final isDarkMode = themeController.isDarkMode.value;
+    final themeController = Get.find<ThemeController>();
     return StreamProvider<UserHandler?>.value(
       value: AuthService().user,
       initialData: null,
       catchError: (context, error) {
         return null;
       },
-      child: GetMaterialApp(
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-        home: const Wrapper(),
-        debugShowCheckedModeBanner: false,
-        routes: {
-          '/home': (context) => const Home(),
-          '/auth': (context) => const Authenticate(),
-          // other routes...
-        },
+      child: Obx(
+        () => GetMaterialApp(
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode:
+              themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
+          home: const Wrapper(),
+          debugShowCheckedModeBanner: false,
+          routes: {
+            '/home': (context) => const Home(),
+            '/auth': (context) => const Authenticate(),
+            // other routes...
+          },
+        ),
       ),
     );
   }

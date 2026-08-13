@@ -13,6 +13,7 @@ class UserOfGift {
   String uid;
   bool enableNotif;
   Map nicknames;
+  bool exists;
 
   UserOfGift({
     this.userName = "username",
@@ -29,5 +30,6 @@ class UserOfGift {
     this.uid = "",
     this.enableNotif = true,
     this.nicknames = const {},
+    this.exists = true,
   });
 }

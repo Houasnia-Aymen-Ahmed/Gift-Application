@@ -49,5 +49,9 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+		<string>Gift needs camera access to scan your friend's QR code.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Gift needs photo library access to set your profile picture.</string>
 	</dict>
 </plist>

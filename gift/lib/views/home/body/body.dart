@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:gift/shared/card.dart';
 import 'package:gift/shared/pallete.dart';
 import 'package:gift/views/home/bottom/bottom_sheet.dart';
+import '../../../models/conversation_message.dart';
 import '../../../models/user_of_gift.dart';
 import '../../../services/database.dart';
 import '../../../services/notif.dart';
 import '../../../constants/constants.dart';
+import '../../../constants/bottom_sheet_constants.dart';
 
 class BuildBody extends StatefulWidget {
   final UserOfGift user;
@@ -37,24 +39,44 @@ class _BuildBodyState extends State<BuildBody> {
     notifServices.initialize(context);
   }
 
-  Future<void> _incrementGiftCounts(
-      UserOfGift myUser, UserOfGift friendUser) async {
-    final updatedUserGiftSent = myUser.giftSent + 1;
-    final updatedFriendserGiftReceived = friendUser.giftRecieved + 1;
+  Future<void> _sendGift(
+      UserOfGift myUser, UserOfGift friendUser, String giftId) async {
+    await _databaseService.incrementGiftSent(myUser.uid);
+    await _databaseService.incrementGiftReceived(friendUser.uid);
+    await _databaseService.sendConversationMessage(
+      otherUid: friendUser.uid,
+      text: giftId,
+      kind: 'gift',
+    );
+  }
 
-    await _databaseService.updateUserSpecificData(
-      uid: myUser.uid,
-      giftSent: updatedUserGiftSent,
-    );
-    await _databaseService.updateUserSpecificData(
-      uid: friendUser.uid,
-      giftRecieved: updatedFriendserGiftReceived,
-    );
-    await notifServices.sendNotif(
-      friendUser.token,
-      myUser,
-      'gift',
-      "",
+  Future<void> _showGiftPicker(
+      UserOfGift myUser, UserOfGift friendUser) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Send a gift'),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: GiftCatalog.options
+              .map(
+                (option) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Image.asset(option.asset, width: 40, height: 40),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _sendGift(myUser, friendUser, option.id);
+                      },
+                    ),
+                    Text(option.label),
+                  ],
+                ),
+              )
+              .toList(),
+        ),
+      ),
     );
   }
 
@@ -65,11 +87,11 @@ class _BuildBodyState extends State<BuildBody> {
 
     void messageAction(UserOfGift myUser, UserOfGift friendUser) {
       setState(() => msgContent = messageController.text);
-      notifServices.sendNotif(friendUser.token, myUser, 'message', msgContent);
-      _databaseService.updateUserSpecificData(
-          uid: myUser.uid, message: msgContent);
-      _databaseService.updateUserSpecificData(
-          uid: friendUser.uid, friendMessage: msgContent);
+      _databaseService.sendConversationMessage(
+        otherUid: friendUser.uid,
+        text: msgContent,
+        kind: 'message',
+      );
       messageController.clear();
       msgContent = "";
     }
@@ -117,17 +139,42 @@ class _BuildBodyState extends State<BuildBody> {
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.all(15),
-                          child: widget.friend.message != ""
-                              ? Text(
-                                  widget.friend.message,
-                                  style: txt().copyWith(
-                                    fontSize: 25.0,
-                                    color: Palette.textMessageColor,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )
-                              : textDisabled,
+                          child: StreamBuilder<ConversationMessage?>(
+                            stream: _databaseService
+                                .latestMessageStream(widget.friend.uid),
+                            builder: (context, snapshot) {
+                              final latest = snapshot.data;
+                              if (latest == null) return textDisabled;
+                              if (latest.kind == 'gift') {
+                                final gift = GiftCatalog.byId(latest.text);
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(gift.asset,
+                                        width: 40, height: 40),
+                                    Text(
+                                      'Sent a ${gift.label} 🎁',
+                                      style: txt().copyWith(
+                                        fontSize: 18.0,
+                                        color: Palette.textMessageColor,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                );
+                              }
+                              if (latest.kind != 'message') return textDisabled;
+                              return Text(
+                                latest.text,
+                                style: txt().copyWith(
+                                  fontSize: 25.0,
+                                  color: Palette.textMessageColor,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                                textAlign: TextAlign.center,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -158,11 +205,26 @@ class _BuildBodyState extends State<BuildBody> {
                                       10.0, 10.0, 7.5, 10.0),
                                   side: BorderSide(color: Palette.iconColor),
                                 ),
-                                onPressed: () async {
-                                  if (msgContent == "") {
-                                    await _incrementGiftCounts(
-                                        widget.user, widget.friend);
-                                  } else {
+                                onPressed: () =>
+                                    _showGiftPicker(widget.user, widget.friend),
+                                child: Icon(
+                                  Icons.card_giftcard_rounded,
+                                  color: Palette.iconColor,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(8),
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  elevation: 0,
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      10.0, 10.0, 7.5, 10.0),
+                                  side: BorderSide(color: Palette.iconColor),
+                                ),
+                                onPressed: () {
+                                  if (msgContent != "") {
                                     messageAction(widget.user, widget.friend);
                                   }
                                 },

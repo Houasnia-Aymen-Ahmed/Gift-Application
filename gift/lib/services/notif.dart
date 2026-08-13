@@ -1,22 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:gift/models/user_of_gift.dart';
 import 'package:gift/views/home/home.dart';
-import 'package:http/http.dart' as http;
 import 'database.dart';
 
 class NotificationServices {
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  static bool _initialized = false;
 
   void initialize(BuildContext context) {
+    if (_initialized) return;
+    _initialized = true;
     requestNotificationPermission();
     isTokenRefresh();
     getDeviceToken().then((value) {});
@@ -48,7 +47,7 @@ class NotificationServices {
         const AndroidInitializationSettings('@mipmap/ic_launcher');
     var initSettings = InitializationSettings(android: androidInit);
     await _flutterLocalNotificationsPlugin.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: (payload) {
         handleMessage(context, message);
       },
@@ -85,45 +84,6 @@ class NotificationServices {
     });
   }
 
-  Future sendNotif(
-      String token, UserOfGift user, String type, String friendMessage) async {
-    String message = '';
-
-    if (type == 'friend') {
-      message = 'Your are now friend with ${user.userName} \uD83D\uDE00';
-    } else if (type == 'gift') {
-      message = '${user.userName} sent you a gift \uD83C\uDF81';
-    } else if (type == 'message') {
-      message = '${user.userName} sent you a message \uD83D\uDCe9';
-    } else {
-      message = 'Notification';
-    }
-    var data = {
-      'to': token,
-      'priority': 'high',
-      'notification': {
-        'title': type != 'gift' ? 'Gift $type' : 'Gift',
-        'body': message,
-      },
-      'data': {
-        'type': type,
-        'id': '${type.hashCode}',
-        'message': friendMessage
-      },
-    };
-    await http.post(
-      Uri.parse(
-        'https://fcm.googleapis.com/fcm/send',
-      ),
-      body: jsonEncode(data),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization':
-            'key=AUTH_KEY',
-      },
-    );
-  }
-
   void handleMessage(BuildContext context, RemoteMessage message) {
     if (message.data['type'] == 'friend') {
       Future.microtask(
@@ -145,16 +105,13 @@ class NotificationServices {
     }
   }
 
+  static const String _channelId = 'high_importance_channel';
+
   Future<void> showNotif(RemoteMessage message) async {
-    AndroidNotificationChannel channel = AndroidNotificationChannel(
-      Random.secure().nextInt(100000).toString(),
-      'High Importance Notification',
-      importance: Importance.max,
-    );
     AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      channel.id.toString(),
-      channel.name.toString(),
+        const AndroidNotificationDetails(
+      _channelId,
+      'High Importance Notification',
       channelDescription: '',
       importance: Importance.high,
       priority: Priority.high,
@@ -167,10 +124,10 @@ class NotificationServices {
 
     Future.delayed(Duration.zero, () {
       _flutterLocalNotificationsPlugin.show(
-        0,
-        message.notification!.title.toString(),
-        message.notification!.body.toString(),
-        notificationDetails,
+        id: 0,
+        title: message.notification!.title.toString(),
+        body: message.notification!.body.toString(),
+        notificationDetails: notificationDetails,
       );
     });
   }

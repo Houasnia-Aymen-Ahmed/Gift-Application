@@ -22,27 +22,21 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   final DatabaseService _databaseService = DatabaseService();
-  final ThemeController _themeController = Get.put(ThemeController());
   UserOfGift? myUser;
   UserOfGift? friendUser;
 
   Future<void> updateAppWidget() async {
-    if (myUser != null) {
+    if (myUser != null && friendUser != null) {
+      final latest = await _databaseService.latestMessageOnce(friendUser!.uid);
       await HomeWidget.saveWidgetData<String>(
         '_textContent',
-        friendUser!.message,
+        latest?.kind == 'message' ? latest!.text : '',
       );
       await HomeWidget.updateWidget(
         name: 'AppWidgetProvider',
         iOSName: 'AppWidgetProvider',
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _themeController.isDarkMode.value = Get.isDarkMode;
   }
 
   @override
@@ -67,13 +61,15 @@ class _HomeState extends State<Home> {
           } else {
             myUser = snapshot.data;
             if (myUser!.friend == '') {
-              return const Loading();
+              return NoFriendHome(myUser: myUser!);
             }
             return StreamBuilder<UserOfGift>(
               stream: _databaseService.getUserDataStream(myUser!.friend),
               builder: (context, snapshot) {
-                if (!_databaseService.isDataExist) {
-                  return NoFriendHome(myUser: myUser!);
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: Loading(),
+                  );
                 } else if (!snapshot.hasData) {
                   return const Center(
                     child: Loading(),
@@ -87,11 +83,12 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   );
+                } else if (!snapshot.data!.exists) {
+                  return NoFriendHome(myUser: myUser!);
                 } else {
                   friendUser = snapshot.data;
                   updateAppWidget();
                   return GetBuilder<ThemeController>(
-                    init: ThemeController(),
                     builder: (themeController) {
                       return Container(
                         alignment: Alignment.center,

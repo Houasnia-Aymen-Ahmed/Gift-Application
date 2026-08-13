@@ -46,3 +46,4 @@ app.*.map.json
 firebase_options.dart
 google-services.json
 .env
+android/local.properties

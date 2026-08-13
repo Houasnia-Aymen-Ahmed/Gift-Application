@@ -64,7 +64,7 @@ class _BuildDrawerContentState extends State<BuildDrawerContent> {
     XFile? pickedImage = await selectFile();
     if (pickedImage != null) {
       imgName = pickedImage.name;
-      final path = 'files/$imgName';
+      final path = 'avatars/${widget.user.uid}';
       final ref = storage.ref().child(path);
       final UploadTask uploadTask = ref.putFile(File(pickedImage.path));
       final snapshot = await uploadTask.whenComplete(() => null);

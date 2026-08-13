@@ -48,7 +48,7 @@ class _FriendListTileState extends State<FriendListTile> {
           style: const TextStyle(fontSize: 20),
         ),
         subtitle: Text(
-          widget.user.nicknames[widget.friendUser.uid],
+          widget.user.nicknames[widget.friendUser.uid] ?? 'nickname',
           style: const TextStyle(fontSize: 20),
         ),
       );

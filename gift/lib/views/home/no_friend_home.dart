@@ -13,7 +13,6 @@ class NoFriendHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GetBuilder<ThemeController>(
-      init: ThemeController(),
       builder: (themeController) => Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(

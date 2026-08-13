@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // UserCollection/{uid}: a user's own profile, stats, and friend list.
+    // Read is open to any signed-in user because QR scanning and friend
+    // lookups need to resolve a bare uid to a profile before any
+    // relationship exists between the two users.
+    match /UserCollection/{uid} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow delete: if false;
+
+      allow update: if request.auth != null && (
+        request.auth.uid == uid ||
+        isFriendGiftIncrement()
+      );
+    }
+
+    // FriendRequests/{requestId}: consent handshake for QR-code friending.
+    // Nobody can add themselves to another user's friend list directly —
+    // every friendship starts here and is only ever written to by the
+    // party whose own uid it is safe to attribute the write to.
+    match /FriendRequests/{requestId} {
+      allow read: if request.auth != null &&
+        request.auth.uid in [resource.data.from, resource.data.to];
+
+      allow create: if request.auth != null &&
+        request.resource.data.from == request.auth.uid &&
+        request.resource.data.to != request.auth.uid &&
+        request.resource.data.status == 'pending';
+
+      allow update: if request.auth != null && (
+        (
+          request.auth.uid == resource.data.to &&
+          resource.data.status == 'pending' &&
+          request.resource.data.status in ['accepted', 'declined'] &&
+          onlyFieldsChanged(['status'])
+        ) ||
+        (
+          request.auth.uid == resource.data.from &&
+          resource.data.status == 'accepted' &&
+          request.resource.data.status == 'completed' &&
+          onlyFieldsChanged(['status'])
+        )
+      );
+
+      allow delete: if false;
+    }
+
+    // Conversations/{pairId}/messages/{messageId}: one thread per friend
+    // pair, keyed by their two uids sorted and joined with "_". Only the
+    // two participants can read or write into it, and messages are
+    // append-only once sent.
+    match /Conversations/{pairId}/messages/{messageId} {
+      allow read: if request.auth != null && isParticipant(pairId);
+
+      allow create: if request.auth != null &&
+        isParticipant(pairId) &&
+        request.resource.data.from == request.auth.uid;
+
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    function isParticipant(pairId) {
+      return request.auth.uid in pairId.split('_');
+    }
+
+    function onlyFieldsChanged(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // Lets a confirmed friend bump exactly `giftRecieved` by exactly 1 on
+    // the recipient's own doc — nothing else about the doc may change in
+    // the same write, and the writer must already be in the recipient's
+    // friendList.
+    function isFriendGiftIncrement() {
+      return request.auth.uid in resource.data.friendList &&
+        onlyFieldsChanged(['giftRecieved']) &&
+        request.resource.data.giftRecieved == resource.data.giftRecieved + 1;
+    }
+  }
+}

@@ -5,9 +5,9 @@ import 'package:gift/models/user_of_gift.dart';
 import 'package:gift/constants/about_content_text.dart';
 import 'package:gift/shared/pallete.dart';
 import 'package:gift/theme/theme_controller.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../models/settings_list.dart';
 import '../../../constants/constants.dart';
+import '../../../services/database.dart';
 
 class SettingListTile extends StatefulWidget {
   final SettingList item;
@@ -23,46 +23,11 @@ class SettingListTile extends StatefulWidget {
 }
 
 class _SettingListTileState extends State<SettingListTile> {
-  final controller = Get.put(ThemeController());
+  final controller = Get.find<ThemeController>();
+  final DatabaseService _databaseService = DatabaseService();
   late MaterialStateProperty<Icon?> thumbIcon;
-  late bool isNotificationEnabled = false;
-  late bool isDarkModeEnabled = false;
+  late bool isNotificationEnabled = widget.user.enableNotif;
   late Color? trackOutlineColor = Palette.boldPink;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPreference().then(
-      (values) => setState(
-        () {
-          isDarkModeEnabled = values['isDarkModeEnabled']!;
-          isNotificationEnabled = values['isNotificationEnabled']!;
-        },
-      ),
-    );
-  }
-
-  Future<Map<String, bool>> _loadPreference() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return {
-      'isDarkModeEnabled': prefs.getBool('isDarkModeEnabled') ?? false,
-      'isNotificationEnabled': prefs.getBool('isNotificationEnabled') ?? false,
-    };
-  }
-
-  Future<void> _saveDarkModePreference(bool value, int index) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    switch (index) {
-      case 0:
-        await prefs.setBool('isNotificationEnabled', value);
-        break;
-      case 1:
-        await prefs.setBool('isDarkModeEnabled', value);
-        break;
-      default:
-        break;
-    }
-  }
 
   void _toggleNotifications(bool newValue) {
     setState(() {
@@ -71,22 +36,19 @@ class _SettingListTileState extends State<SettingListTile> {
           ? trackOutlineColor = Palette.boldPink
           : trackOutlineColor = Palette.lightPink;
     });
-    _saveDarkModePreference(newValue, 0);
+    _databaseService.updateUserSpecificData(
+        uid: widget.user.uid, enableNotif: newValue);
   }
 
   void _toggleDarkMode(bool newValue) {
-    setState(() {
-      isDarkModeEnabled = newValue;
-      controller.changeTheme();
-    });
-    _saveDarkModePreference(newValue, 1);
+    controller.changeTheme();
   }
 
   Color _thumbColor() {
     if (widget.item.title == 'Notifications') {
       return isNotificationEnabled ? Palette.boldPink : Palette.lightPink;
     } else {
-      return isDarkModeEnabled ? Palette.boldPink : Palette.lightPink;
+      return controller.isDarkMode.value ? Palette.boldPink : Palette.lightPink;
     }
   }
 
@@ -102,7 +64,7 @@ class _SettingListTileState extends State<SettingListTile> {
               color: Palette.boldPink,
             );
     } else {
-      return isDarkModeEnabled
+      return controller.isDarkMode.value
           ? Icon(
               Icons.light_mode_rounded,
               color: Palette.lightPink,
@@ -138,7 +100,6 @@ class _SettingListTileState extends State<SettingListTile> {
                 child: Transform.scale(
                   scale: 1.125,
                   child: GetBuilder<ThemeController>(
-                    init: ThemeController(),
                     builder: (controller) => Switch(
                       trackOutlineColor: MaterialStateProperty.resolveWith(
                           (states) => trackOutlineColor),

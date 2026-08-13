@@ -1,7 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:gift/services/database.dart';
 import 'package:gift/shared/pallete.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/settings_list.dart';
@@ -280,7 +279,7 @@ List<Widget> generateListTiles({
       fieldLength: 20,
       onUpdate: onUpdate,
     ),
-    DatabaseService().isDataExist
+    friend.exists
         ? EditableListTile(
             text: capitalizeFirst(user.nicknames[friend.uid]),
             fieldToUpdate: 'Nickname',

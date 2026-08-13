@@ -19,7 +19,9 @@ class NetworkController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     _checkInitialConnectionStatus();
-    _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivity.onConnectivityChanged.listen(
+      (results) => _updateConnectionStatus(results.first),
+    );
   }
 
   Future<void> _checkInitialConnectionStatus() async {

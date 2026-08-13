@@ -8,11 +8,12 @@ import '../constants/constants.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  UserHandler _userFromFirebaseUser(User? user) => UserHandler(uid: user!.uid);
+  UserHandler? _userFromFirebaseUser(User? user) =>
+      user == null ? null : UserHandler(uid: user.uid);
 
   User? get currentUsr => _auth.currentUser;
 
-  Stream<UserHandler> get user =>
+  Stream<UserHandler?> get user =>
       _auth.authStateChanges().map(_userFromFirebaseUser);
 
   Future signInAnon() async {

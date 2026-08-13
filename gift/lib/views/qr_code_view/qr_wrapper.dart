@@ -6,6 +6,7 @@ import 'package:gift/views/home/home.dart';
 import 'package:gift/views/qr_code_view/qrcode_page.dart';
 import '../../models/user.dart';
 import '../../services/database.dart';
+import '../../shared/friend_request_gate.dart';
 
 class QRCodeWrapper extends StatefulWidget {
   final UserHandler user;
@@ -30,12 +31,14 @@ class _QRCodeWrapperState extends State<QRCodeWrapper> {
   }
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<UserOfGift>(
-      stream: _dataService.getUserDataStream(_auth.currentUsr!.uid),
-      builder: (context, snapshot) {
-        return _buildContent(snapshot);        
-      },
-    );
+  Widget build(BuildContext context) => FriendRequestGate(
+        child: StreamBuilder<UserOfGift>(
+          stream: _dataService.getUserDataStream(_auth.currentUsr!.uid),
+          builder: (context, snapshot) {
+            return _buildContent(snapshot);
+          },
+        ),
+      );
 
   Widget _buildContent(AsyncSnapshot<dynamic> snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {

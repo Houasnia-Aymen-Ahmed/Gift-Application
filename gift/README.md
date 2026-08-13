@@ -1,16 +1,30 @@
 # gift
 
-A new Flutter project.
+Flutter app. See the [repo root README](../README.md) for what the app does and how it's used.
 
-## Getting Started
+## Development setup
 
-This project is a starting point for a Flutter application.
+```
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+Requires a Firebase project with Firestore, Storage, and Cloud Messaging enabled, plus
+`google-services.json` (Android) / `GoogleService-Info.plist` (iOS) and `firebase_options.dart`
+for that project — these are gitignored and not included in the repo.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Firestore/Storage security rules live in `firestore.rules` and `storage.rules` at the repo
+root and must be deployed with the Firebase CLI:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+firebase deploy --only firestore:rules,storage
+```
+
+Push notifications are sent by the Cloud Function in `functions/` (triggered on new
+messages/gifts/friend requests), not from the client. Deploying it requires the project to
+be on the Blaze plan:
+
+```
+cd functions && npm install && cd ..
+firebase deploy --only functions
+```
